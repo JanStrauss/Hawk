@@ -7,28 +7,28 @@ import org.bukkit.util.Vector;
 
 public class HawkTask implements Runnable {
 	private Hawk main;
-	private static final Vector HOVER = new Vector(0, 0.1, 0);
-	private static final Vector HOVER_BOOST = new Vector(0, 1, 0);
+	private static final Vector HOVER 		= new Vector(0, 0.1, 0);
+	private static final Vector HOVER_BOOST = new Vector(0,   1, 0);
 	
 	public HawkTask(Hawk main) {
 		this.main = main;
 	}
 
 	public void run() {
-		for (final String pn : main.flyingPlayer.keySet()) {
+		for (final String pn : main.flyingPlayers.keySet()) {
 			Player p = main.getServer().getPlayer(pn);
-			Flystate s = main.flyingPlayer.get(pn);
+			Flystate s = main.flyingPlayers.get(pn);
 			
 			if (p != null) {
 				switch (s) {
-					case FLY: doFly(p); break;
+					case FLY: 	doFly(p); 	break;
 					case HOVER: doHover(p); break;
 				}
 			}
 			else {
 				main.getServer().getScheduler().scheduleSyncDelayedTask(main, new Runnable() {
 					public void run() {
-						main.flyingPlayer.remove(pn);
+						main.flyingPlayers.remove(pn);
 					}
 				});
 			}

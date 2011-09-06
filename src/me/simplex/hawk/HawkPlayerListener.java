@@ -20,28 +20,28 @@ public class HawkPlayerListener extends PlayerListener{
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (event.getItem().getType().equals(Material.FEATHER) && checkAction(event.getAction())) {
 			Player player = event.getPlayer();
-			if (main.flyingPlayer.containsKey(player.getName())) {
-				switch (main.flyingPlayer.get(player.getName())) {
-				case FLY: 														// Fly
-					main.flyingPlayer.put(player.getName(), Flystate.HOVER); 
-					player.sendMessage(ChatColor.BLUE+Hawk.PREFIX+ChatColor.WHITE+"you are now hovering.");
-					break;
-				case HOVER: 													// Hover
-					main.flyingPlayer.remove(player.getName()); 
-					player.sendMessage(ChatColor.BLUE+Hawk.PREFIX+ChatColor.WHITE+"you are now walking the dinosaur.");
-					break;
+			if (main.flyingPlayers.containsKey(player.getName())) {
+				switch (main.flyingPlayers.get(player.getName())) {
+					case FLY: 														// Fly
+						main.flyingPlayers.put(player.getName(), Flystate.HOVER); 
+						player.sendMessage(ChatColor.BLUE+Hawk.PREFIX+ChatColor.WHITE+"you are now hovering.");
+						break;
+					case HOVER: 													// Hover
+						main.flyingPlayers.remove(player.getName()); 
+						player.sendMessage(ChatColor.BLUE+Hawk.PREFIX+ChatColor.WHITE+"you are now walking the dinosaur.");
+						break;
 				}
-			}																	// Land
+			}																		// Land
 			else {
 				if (player.hasPermission("hawk.fly")) {
-					main.flyingPlayer.put(player.getName(), Flystate.FLY);
+					main.flyingPlayers.put(player.getName(), Flystate.FLY);
 					player.sendMessage(ChatColor.BLUE+Hawk.PREFIX+ChatColor.WHITE+"you are now flying.");
 				}
 			}
 		}
 	}
 	public void onPlayerQuit(PlayerQuitEvent event) {
-		main.flyingPlayer.remove(event.getPlayer().getName());
+		main.flyingPlayers.remove(event.getPlayer().getName());
 	}
 	
 	private static boolean checkAction(Action a){
