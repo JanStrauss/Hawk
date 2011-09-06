@@ -44,7 +44,6 @@ public class HawkTask implements Runnable {
 	private static void doHover(Player player){
 		if (player.isSneaking()) {
 			player.setVelocity(HOVER_BOOST);
-			System.out.println("sneak");
 		}
 		else {
 			player.setVelocity(HOVER);
