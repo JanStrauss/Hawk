@@ -21,8 +21,8 @@ public class HawkTask implements Runnable {
 			
 			if (p != null) {
 				switch (s) {
-				case FLY: doFly(p); break;
-				case HOVER: doHover(p); break;
+					case FLY: doFly(p); break;
+					case HOVER: doHover(p); break;
 				}
 			}
 			else {
@@ -31,7 +31,6 @@ public class HawkTask implements Runnable {
 						main.flyingPlayer.remove(pn);
 					}
 				});
-				
 			}
 		}
 	}
