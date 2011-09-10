@@ -9,6 +9,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class HawkPlayerListener extends PlayerListener{
 	private Hawk main;
@@ -18,7 +19,11 @@ public class HawkPlayerListener extends PlayerListener{
 	}
 	
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (event.getItem().getType().equals(Material.FEATHER) && checkAction(event.getAction())) {
+		ItemStack is = event.getItem();
+		if (is == null) {
+			return;
+		}
+		if (is.getType().equals(Material.FEATHER) && checkAction(event.getAction())) {
 			Player player = event.getPlayer();
 			if (main.flyingPlayers.containsKey(player.getName())) {
 				switch (main.flyingPlayers.get(player.getName())) {
