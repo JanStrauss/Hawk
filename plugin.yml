@@ -1,6 +1,6 @@
 name: Hawk
 main: me.simplex.hawk.Hawk
-version: 0.1.0
+version: 0.2.0
 website: http://over9000.eu
 author: simplex
 description: Fly until the server laggs
