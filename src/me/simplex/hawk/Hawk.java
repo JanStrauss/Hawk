@@ -20,11 +20,13 @@ package me.simplex.hawk;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.logging.Filter;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class Hawk extends JavaPlugin {
+public class Hawk extends JavaPlugin implements Filter {
 	protected static final String PREFIX = "[HAWK] ";
 
 	protected static HashSet<String> dmgImunePlayers 					= new HashSet<String>();
@@ -36,6 +38,7 @@ public class Hawk extends JavaPlugin {
 	
 	public void onEnable() {
 		log = getLogger();
+		log.setFilter(this);
 
 		HawkConfiguration.loadConfiguration(this);
 
@@ -52,5 +55,9 @@ public class Hawk extends JavaPlugin {
 	
 	public static void toLogger(String msg){
 		log.info(msg);
+	}
+
+	public boolean isLoggable(LogRecord record) {
+		return !record.getMessage().contains("was kicked for floating too long!");
 	}
 }

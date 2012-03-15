@@ -52,6 +52,7 @@ public class HawkPlayerListener implements Listener{
 					case HOVER: 													// Hover
 						Hawk.flyingPlayers.remove(player.getName()); 
 						Hawk.dmgImunePlayers.add(player.getName());
+						player.setAllowFlight(false);
 						player.sendMessage(ChatColor.BLUE + Hawk.PREFIX + ChatColor.WHITE + HawkConfiguration.getMessage_Land());
 						break;
 				}
@@ -64,6 +65,7 @@ public class HawkPlayerListener implements Listener{
 						}
 					}
 					Hawk.flyingPlayers.put(player.getName(), new HawkPlayerStatus());
+					player.setAllowFlight(true);
 					player.sendMessage(ChatColor.BLUE + Hawk.PREFIX + ChatColor.WHITE + HawkConfiguration.getMessage_Fly());
 				}
 			}
@@ -74,6 +76,7 @@ public class HawkPlayerListener implements Listener{
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		Hawk.flyingPlayers.remove(event.getPlayer().getName());
 		Hawk.dmgImunePlayers.remove(event.getPlayer().getName());
+		event.getPlayer().setAllowFlight(false);
 	}
 	
 	@EventHandler(priority = EventPriority.HIGH)
