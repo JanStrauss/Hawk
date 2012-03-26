@@ -28,19 +28,14 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 public class HawkEntityListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerDmg(EntityDamageEvent event) {
-		if (event.getEntity() instanceof Player) {
+		if (event.getEntity() instanceof Player && event.getCause().equals(DamageCause.FALL)) {
 			Player player = (Player) event.getEntity();
 			if (Hawk.flyingPlayers.containsKey(player.getName())) {
-				if (event.getCause().equals(DamageCause.FALL)) {
-					event.setCancelled(true);
-					// player.sendMessage("[CASE 1] Fall dmg event cancelled");
-				}
+				event.setCancelled(true);
+				
 			} else if (Hawk.dmgImunePlayers.contains(player.getName())) {
 				event.setCancelled(true);
-				// player.sendMessage("[CASE 2] Fall dmg event cancelled");
-				// main.toLogger("List Length: " + main.dmgImunePlayers.size());
 				Hawk.dmgImunePlayers.remove(player.getName());
-				// main.toLogger("List Length: " + main.dmgImunePlayers.size());
 			}
 		}
 	}

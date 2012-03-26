@@ -88,10 +88,14 @@ public class HawkTask implements Runnable {
 						player.sendMessage(ChatColor.BLUE + Hawk.PREFIX + ChatColor.WHITE + HawkConfiguration.getMessage_Land());
 						return;
 					}
+				} else {
+					Hawk.flyingPlayers.remove(player.getName());
+					Hawk.dmgImunePlayers.add(player.getName());
+					player.setAllowFlight(false);
+					player.sendMessage(ChatColor.BLUE + Hawk.PREFIX + ChatColor.WHITE + HawkConfiguration.getMessage_Land());
 				}
 			}
 			status.increaseTime();
-
 		}
 	}
 }
