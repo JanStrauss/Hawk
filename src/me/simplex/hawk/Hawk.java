@@ -101,7 +101,6 @@ public class Hawk extends JavaPlugin implements Filter {
 				}
 			}
 			flyingPlayers.put(player.getName(), new HawkPlayerStatus());
-			player.setAllowFlight(true);
 			player.sendMessage(ChatColor.BLUE + PREFIX + ChatColor.WHITE + HawkConfiguration.getMessage_Fly());
 		}
 	}
@@ -126,7 +125,6 @@ public class Hawk extends JavaPlugin implements Filter {
 	public static void performSwitchToLand(Player player){
 		flyingPlayers.remove(player.getName());
 		dmgImmunePlayers.add(player.getName());
-		player.setAllowFlight(false);
 		player.sendMessage(ChatColor.BLUE + Hawk.PREFIX + ChatColor.WHITE + HawkConfiguration.getMessage_Land());
 	}
 	
@@ -186,6 +184,5 @@ public class Hawk extends JavaPlugin implements Filter {
 	public static void handlePlayerQuit(Player player){
 		flyingPlayers.remove(player.getName());
 		dmgImmunePlayers.remove(player.getName());
-		player.setAllowFlight(false);
 	}
 }
