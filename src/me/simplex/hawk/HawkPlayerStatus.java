@@ -18,6 +18,15 @@
  */
 package me.simplex.hawk;
 
+import org.bukkit.entity.Player;
+
+/**
+ * This class stores the current {@link Flystate} of a {@link Player}.
+ * The time since the last item consume is also stored if enabled in configuration.
+ * 
+ * @author s1mplex
+ *
+ */
 public class HawkPlayerStatus {
 	public static enum Flystate{FLY, HOVER}
 	

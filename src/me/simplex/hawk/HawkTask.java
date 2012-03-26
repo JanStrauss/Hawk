@@ -21,12 +21,19 @@ package me.simplex.hawk;
 import me.simplex.hawk.HawkPlayerStatus.Flystate;
 import me.simplex.hawk.util.InventoryUtil;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.Vector;
 
+/**
+ * This class is scheduled using the {@link BukkitScheduler}.
+ * It gets called on every server tick performing the fly/hover velocity changes to a {@link Player}
+ * 
+ * @author s1mpl3x
+ *
+ */
 public class HawkTask implements Runnable {
 	private Hawk main;
 	
@@ -37,10 +44,13 @@ public class HawkTask implements Runnable {
 	private static final Vector HOVER 		= new Vector(0, HawkConfiguration.getHover_boost(), 0);
 	private static final Vector HOVER_BOOST = new Vector(0,   1, 0);
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Runnable#run()
+	 */
 	public void run() {
-		for (final String playername : Hawk.flyingPlayers.keySet()) {
+		for (final String playername : Hawk.getFlyingPlayersNames()) {
 			Player player = main.getServer().getPlayer(playername);
-			HawkPlayerStatus status = Hawk.flyingPlayers.get(playername);
+			HawkPlayerStatus status = Hawk.getPlayerStatus(player);
 			
 			if (player != null) {
 				switch (status.getState()) {
@@ -49,17 +59,22 @@ public class HawkTask implements Runnable {
 				}
 				performConsume(player, status);
 			}
-			else {
-				Hawk.flyingPlayers.remove(playername);
-			}
 		}
 	}
 	
+	/**
+	 * Give the player the fly boost
+	 * @param player
+	 */
 	private static void doFly(Player player){
 		Vector view = player.getLocation().getDirection();
 		player.setVelocity(view.multiply(HawkConfiguration.getFly_boost()));
 	}
 	
+	/**
+	 * Give the player the hover boost
+	 * @param player
+	 */
 	private static void doHover(Player player){
 		if (player.isSneaking()) {
 			player.setVelocity(HOVER_BOOST);
@@ -69,6 +84,12 @@ public class HawkTask implements Runnable {
 		}
 	}
 	
+	/**
+	 * Only called if enabled in the configuration. This method checks if a player has the configured item in the inventory and removes it every
+	 * configured seconds
+	 * @param player to handle 
+	 * @param status of the given {@link Player}
+	 */
 	private static void performConsume(Player player, HawkPlayerStatus status){
 		if (HawkConfiguration.consume_item()) {
 			int limit = 20 * (status.getState() == Flystate.FLY ?	HawkConfiguration.getConsume_Seconds_Fly() : 
@@ -82,17 +103,11 @@ public class HawkTask implements Runnable {
 					InventoryUtil.removeOneFromPlayerInventory(inv, type);
 					status.resetTime();
 					if (!inv.contains(type)) {
-						Hawk.flyingPlayers.remove(player.getName());
-						Hawk.dmgImunePlayers.add(player.getName());
-						player.setAllowFlight(false);
-						player.sendMessage(ChatColor.BLUE + Hawk.PREFIX + ChatColor.WHITE + HawkConfiguration.getMessage_Land());
+						Hawk.performSwitchToLand(player);
 						return;
 					}
 				} else {
-					Hawk.flyingPlayers.remove(player.getName());
-					Hawk.dmgImunePlayers.add(player.getName());
-					player.setAllowFlight(false);
-					player.sendMessage(ChatColor.BLUE + Hawk.PREFIX + ChatColor.WHITE + HawkConfiguration.getMessage_Land());
+					Hawk.performSwitchToLand(player);
 				}
 			}
 			status.increaseTime();

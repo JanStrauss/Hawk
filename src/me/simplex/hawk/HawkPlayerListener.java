@@ -18,9 +18,6 @@
  */
 package me.simplex.hawk;
 
-import me.simplex.hawk.HawkPlayerStatus.Flystate;
-
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -33,6 +30,11 @@ import org.bukkit.inventory.ItemStack;
 
 public class HawkPlayerListener implements Listener{
 	
+	/**
+	 * Hawk uses this event to allow players to switch between the different modes, flying, hovering and walking
+	 * 
+	 * @param event the {@link PlayerInteractEvent} 
+	 */
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		ItemStack stack = event.getItem();
@@ -41,51 +43,49 @@ public class HawkPlayerListener implements Listener{
 		}
 		if (stack.getType().equals(HawkConfiguration.getItem()) && checkAction(event.getAction())) {
 			Player player = event.getPlayer();
-			if (Hawk.flyingPlayers.containsKey(player.getName())) {
-				HawkPlayerStatus status = Hawk.flyingPlayers.get(player.getName());
+			if (Hawk.isFlyingOrHovering(player)) {
+				HawkPlayerStatus status = Hawk.getPlayerStatus(player);
 				switch (status.getState()) {
-					case FLY: 														// Fly
-						status.setState(Flystate.HOVER);
-						Hawk.dmgImunePlayers.remove(player.getName());
-						player.sendMessage(ChatColor.BLUE + Hawk.PREFIX + ChatColor.WHITE + HawkConfiguration.getMessage_Hover());
+					case FLY: // Fly > Hover
+						Hawk.performSwitchToHover(player, status);
 						break;
-					case HOVER: 													// Hover
-						Hawk.flyingPlayers.remove(player.getName()); 
-						Hawk.dmgImunePlayers.add(player.getName());
-						player.setAllowFlight(false);
-						player.sendMessage(ChatColor.BLUE + Hawk.PREFIX + ChatColor.WHITE + HawkConfiguration.getMessage_Land());
+					case HOVER: // Hover > Land
+						Hawk.performSwitchToLand(player);
 						break;
 				}
-			}																		// Land
+			}	// Land > Fly
 			else {
-				if (player.hasPermission("hawk.fly")) {
-					if (HawkConfiguration.consume_item()) {
-						if (!player.getInventory().contains(HawkConfiguration.getConsume_Item())) {
-							return;
-						}
-					}
-					Hawk.flyingPlayers.put(player.getName(), new HawkPlayerStatus());
-					player.setAllowFlight(true);
-					player.sendMessage(ChatColor.BLUE + Hawk.PREFIX + ChatColor.WHITE + HawkConfiguration.getMessage_Fly());
-				}
+				Hawk.performSwitchToFly(player);
 			}
 		}
 	}
 	
+	/**
+	 * Remove the quitting player from the data model
+	 * @param event
+	 */
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerQuit(PlayerQuitEvent event) {
-		Hawk.flyingPlayers.remove(event.getPlayer().getName());
-		Hawk.dmgImunePlayers.remove(event.getPlayer().getName());
-		event.getPlayer().setAllowFlight(false);
+		Hawk.handlePlayerQuit(event.getPlayer());
 	}
 	
+	/**
+	 * Cancel a kick event if the player is flying or was flying 
+	 * @param event
+	 */
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerKick(PlayerKickEvent event) {
-		if (event.getReason().startsWith("Flying") && (Hawk.flyingPlayers.containsKey(event.getPlayer().getName()) || Hawk.dmgImunePlayers.contains(event.getPlayer().getName()))) {
+		if (event.getReason().startsWith("Flying") && (Hawk.isFlyingOrHovering(event.getPlayer()) || Hawk.isDmgImmune(event.getPlayer()))) {
 			event.setCancelled(true);
 		}
 	}
 	
+	/**
+	 * Checks if the {@link PlayerInteractEvent} fits for Hawk
+	 * 
+	 * @param action the {@link Action} to check
+	 * @return true if the player right clicked on air or a block, false otherwise
+	 */
 	private static boolean checkAction(Action action){
 		return action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK);
 	}

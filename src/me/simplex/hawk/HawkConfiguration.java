@@ -23,6 +23,12 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.file.FileConfiguration;
 
+/**
+ * Helper class that handles the whole configuration and provides the loaded values
+ * 
+ * @author s1mpl3x
+ *
+ */
 public class HawkConfiguration {
 	
 	private static int item_ID 					= 288;
